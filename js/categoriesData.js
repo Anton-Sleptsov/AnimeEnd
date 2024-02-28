@@ -1,4 +1,4 @@
-const mainData = () => {
+const categoriesData = () => {
 
   const preloader = document.querySelector(".preloder");
   const renderGanreList = (ganres) => {
@@ -12,12 +12,12 @@ const mainData = () => {
   }
 
   const renderAnimeList = (array, ganres) => {
-    const container = document.querySelector(".product .col-lg-8");
+    const container = document.querySelector(".product-page .col-lg-8");
 
     ganres.forEach(ganre => {
       const productBlock = document.createElement("div");
       const listBlock = document.createElement("div");
-      const list = array.filter(item => item.ganre === ganre);
+      const list = array.filter(item => item.tags.includes(ganre));
 
       listBlock.classList.add("row");
       productBlock.classList.add("mb-5");
@@ -103,13 +103,20 @@ const mainData = () => {
     .then(response => response.json())
     .then(data => {
       const ganres = new Set();
+      const ganreParams = new URLSearchParams(window.location.search).get("ganre");
+      console.log(ganreParams);
 
       data.forEach(item => ganres.add(item.ganre));
 
       renderTopAnime(data.sort((a, b) => b.views - a.views).slice(0, 5).reverse());
-      renderAnimeList(data.reverse(), ganres);
+
+      if (ganreParams) {
+        renderAnimeList(data.reverse(), [ganreParams]);
+      } else {
+        renderAnimeList(data.reverse(), ganres);
+      }
       renderGanreList(ganres);
     });
 }
 
-mainData();
+categoriesData();
